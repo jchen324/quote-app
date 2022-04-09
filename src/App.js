@@ -1,65 +1,62 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import Quote from "./components/Quote";
 import * as API from "./services/api";
 import { Center } from "@chakra-ui/react";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      darkMode: false,
-      quote: "",
-      author: "",
-    };
-  }
+function App() {
+  const [darkMode, setDarkMode] = useState(false);
+  const [quote, setQuote] = useState("");
+  const [author, setAuthor] = useState("");
 
-  componentDidMount() {
+  useEffect(() => {
+    getTodayQuote();
+  }, []);
+
+  const toggleColorMode = () => {
+    setDarkMode((darkMode) => !darkMode);
+  };
+
+  const getTodayQuote = () => {
     API.getTodayQuote()
       .then((data) => {
-        this.setState(data);
+        setQuote(data.quote);
+        setAuthor(data.author);
       })
       .catch((err) => {
         console.log(err);
       });
-  }
-
-  toggleColorMode = () => {
-    this.setState((state) => ({ darkMode: !state.darkMode }));
   };
 
-  getRandomQuote = () => {
+  const getRandomQuote = () => {
     API.getRandomQuote()
       .then((data) => {
-        this.setState(data);
+        setQuote(data.quote);
+        setAuthor(data.author);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  render() {
-    const { darkMode, quote, author } = this.state;
-
-    return (
-      <Center
-        w="100%"
-        minH="100vh"
-        bgGradient={
-          darkMode
-            ? "linear(to-r, #2C3E50, #4CA1AF)"
-            : "linear(to-r, #d9a7c7, #fffcdc)"
-        }
-      >
-        <Quote
-          getRandomQuote={this.getRandomQuote}
-          toggleColorMode={this.toggleColorMode}
-          darkMode={darkMode}
-          quote={quote}
-          author={author}
-        />
-      </Center>
-    );
-  }
+  return (
+    <Center
+      w="100%"
+      minH="100vh"
+      bgGradient={
+        darkMode
+          ? "linear(to-r, #2C3E50, #4CA1AF)"
+          : "linear(to-r, #d9a7c7, #fffcdc)"
+      }
+    >
+      <Quote
+        getRandomQuote={getRandomQuote}
+        toggleColorMode={toggleColorMode}
+        darkMode={darkMode}
+        quote={quote}
+        author={author}
+      />
+    </Center>
+  );
 }
 
 export default App;
